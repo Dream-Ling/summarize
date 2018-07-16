@@ -1,0 +1,228 @@
+一、基本使用方式
+    语法
+    1、获取根元素
+
+Element root = document.getRootElement();
+    2、获取某个元素下的子元素
+
+Element db_element = root.element("db");
+    3、获取元素的子元素集合1
+
+List<Element> db_list = db_element.elements();//所有子元素
+    4、获取元素属性的值
+element.attributeValue("name")；
+    5、获取元素的内容
+element.getText();
+    6、获取元素的子元素集合2
+element.elements("user");//指定名称的子元素集合
+    实战
+
+<users>
+<user no="2017">
+<name>狗蛋</name>
+<age>17</age>
+</user>
+<user no="2018">
+<name>李狗蛋</name>
+<age>19</age>
+</user>
+</users>
+
+1、导入dom4j的jar包，遍历
+
+public void test4j() throws DocumentException {
+//创建解析器
+    SAXReader reader = new SAXReader();
+    org.dom4j.Document document = reader.read(new File("src/userInfo.xml"));
+    org.dom4j.Element root = document.getRootElement();
+
+    List<org.dom4j.Element> list = root.elements();
+
+    for(org.dom4j.Element e:list){
+//获取属性值
+        String no = e.attributeValue("no");
+        String name = e.element("name").getText();
+        String age = e.element("age").getText();
+
+        System.out.println(no+name+age);
+    }
+}
+
+
+二、选择器使用
+    语法
+1、获取节点集合
+    List<Node> list= document.selectNodes("users/user/name");
+2、获取节点的节点名称
+node.getName();
+3、获取节点的值
+node.getText();
+4、获取节点的属性值
+node.valuesOf("@no");
+
+实战
+2、还需导入jaxen-1.1-beta-6.jar,进行xpath操作
+
+public void testdom4j_xpath() throws DocumentException {
+    SAXReader reader = new SAXReader();
+    org.dom4j.Document document = reader.read(new File("src/userInfo.xml"));
+    List<Node> list= document.selectNodes("users/user/name");
+    for(Node node:list){
+        String qname = node.getName();
+        String name = node.getText();
+        System.out.println(qname+"--"+name);
+    }
+    List<org.dom4j.Node> list1 = document.selectNodes("users/user");
+    for(Node node:list1){
+        String no = node.valueOf("@no");
+        System.out.println(no);
+    }
+}
+
+三、创建，修改XML文档
+    语法
+1、获取document对象
+Document document = DocumentHelper.createDocument();
+2、创建根元素
+ Element root = document.addElement("users");  
+3、添加子节点
+Element e = element.addElement("name");
+4、设置属性
+Element e = element.setText("张三");
+5、删除节点e的子节点element
+e.remove(element);
+
+四、属性
+     语法
+    1.取得某节点下的某属性          
+Attribute attribute=element.attribute("id");
+    2.取得属性的文字
+    String text=attribute.getText();
+    3.删除某属性
+Attribute attribute=root.attribute("size"); root.remove(attribute);
+    4.遍历某节点的所有属性     
+
+Element root=document.getRootElement();      
+       for(Iterator it=root.attributeIterator();it.hasNext();){        
+           Attribute attribute = (Attribute) it.next();         
+           String text=attribute.getText();        
+           System.out.println(text);  
+          }
+    5.设置某节点的属性和文字.  
+newMemberElm.addAttribute("name", "sitinspring");
+    6.设置属性的文字   
+Attribute attribute=root.attribute("name");   attribute.setText("csdn");
+五、小综合
+    根据xml文档，在数据库创建表
+
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+解析以下XML文档，根据配置信息要求实现:
+1.连接指定数据库
+2.创建table
+-->
+<config>
+<db id="mysql">
+<property name="driverClass">com.mysql.jdbc.Driver</property>
+<property name="url">jdbc:mysql://127.0.0.1:3306/test</property>
+<property name="user">root</property>
+<property name="password">root</property>
+</db>
+<table tableName="tbuser">
+<property name="id" column="uid" type="integer"></property>
+<property name="account" column="username" type="varchar" length="255"></property>
+<property name="password" column="passowrd" type="varchar" length="255"></property>
+</table>
+</config>
+
+package homework;
+import org.dom4j.Document;
+import org.dom4j.DocumentException;
+import org.dom4j.Element;
+import org.dom4j.io.SAXReader;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
+public class CreateDB {
+    String driverClass="";
+    String url="";
+    String user="";
+    String password="";
+    String tableName="";
+    public static void main(String[] args) {
+        try {
+            new CreateDB().doit();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } catch (DocumentException e) {
+            e.printStackTrace();
+        }
+    }
+    public String getsql() throws DocumentException {
+        SAXReader reader = new SAXReader();
+        Document document = reader.read("src/config.xml");
+        //获取根节点
+        Element root = document.getRootElement();
+        //获取db节点
+        Element db_element = root.element("db");
+        //获取db节点里面的节点集合
+        List<Element> db_list = db_element.elements();
+        for(int i=0;i<db_list.size();i++){
+            Element element = db_list.get(i);
+            if("driverClass".equals(element.attributeValue("name"))){
+                driverClass = element.getText();
+            }
+            else if("url".equals(element.attributeValue("name"))){
+                url = element.getText();
+            }
+            else if("user".equals(element.attributeValue("name"))){
+                user = element.getText();
+            }
+            else if("password".equals(element.attributeValue("name"))){
+                password = element.getText();
+            }
+        }
+        ArrayList<String> sqls = new ArrayList<>();
+        //获取tableNmae节点
+        Element tb_element = root.element("table");
+        //获取表名称
+        tableName =tb_element.attributeValue("tableName");
+                //获取元素集合
+        List<Element> tb_list = tb_element.elements();
+        for(int i=0;i<tb_list.size();i++){
+            Element element = tb_list.get(i);
+            String column = element.attributeValue("column");
+            if("integer".equals(element.attributeValue("type"))){
+                sqls.add(column+" "+"int");
+            }else if("varchar".equals(element.attributeValue("type"))){
+                String lenght  = element.attributeValue("length");
+                sqls.add(column+" "+" varchar("+lenght+") ");
+            }
+        }
+        String sql="create table "+tableName+" (";
+        for(int i=0;i<sqls.size();i++){
+            //防止，引发的错误
+            if(i!=sqls.size()-1){
+                sql = sql+sqls.get(i)+" , ";
+            }else {
+                sql = sql+sqls.get(i);
+            }
+        }
+        sql = sql+" );";
+        return sql;
+    }
+    public void doit() throws ClassNotFoundException, SQLException, DocumentException {
+        String sql=getsql();
+        System.out.println(driverClass+"  "+url+"  "+user+" "+password);
+        Class.forName(driverClass);
+        Connection connection = DriverManager.getConnection(url,user,password);
+        Statement statement = connection.createStatement();
+        System.out.println(sql);
+        statement.execute(sql);
+    }
+}
