@@ -1,0 +1,42 @@
+1.Strurs2
+      流程图：
+
+在这里struts的控制器是 action, 而在servlet中servlet就是它的控制器，就相当于人的大脑一样，人体的基本动作相当于客户端，在执行一段动作之前，都要请求服务器，然后反馈回来信息到客户端，执行。
+（1）//转发
+request.setAttribute(“username”,username);（存入）
+request. getRequestDispatcher (“manager/index.jps”).forward(request,response);
+然后在jsp页面中使用  ${username}显示
+（2）//重定向
+response.sendRiedirect();
+3、Struts2中结果集类型
+（1）每个action方法都返回一个String类型的值，struts一次请求返回什么值是由这个值确定的。
+（2）在配置文件中，每一个action元素的配置都必须有result元素，每一个result对应一个action的返回值。
+（3）Result有两个属性：
+name:结果的名字，和action中的返回值一样，默认值为success;
+type:响应结果类型，默认值为dispatcher. 
+name:是请求的方法的名字，在这里，action类里如果有execute（）这里方法，就会默认执行这个方法，如果这个类里还有其他方法，将不会在执行，所以，一般如果一个action类里，想执行多个动作，定义几个方法的话，那么就把这个execute这个方法删掉，改成自定义的方法。
+  <!-- 通配符 -->
+    <action name="*Book" class="com.cn.zhu.action.BookAction" method="{1}Book">
+   <result name="book" >/book.jsp</result>
+   <result name="fail">/error.jsp</result>
+    <result name="bookquery">/bookquery.jsp</result>
+    <result name="QueryBook">/bookquery2.jsp</result>
+ </action>
+ <action name="CheckReaderAction" class="com.cn.zhu.action.CheckReaderAction">
+   <result name="success" >/borrowsuccess.jsp</result>
+   <result name="fail">/error.jsp</result>
+           </action>
+Action原型  struts2
+2.Servlet
+    流程图：
+
+（1）//转发
+request.setAttribute(“username”,username);（存入）
+request. getRequestDispatcher (“manager/index.jps”).forward(request,response);
+然后在jsp页面中使用  ${username}显示
+（2）//重定向
+response.sendRiedirect();
+Servlet的生命周期：创建---init---service---destory
+
+在action的URL路径是http://server/struts2/path1/path2/path3/test.action    或者直接是http://server/struts2/path1/path2/path3/类名
+在servlet中URL路径是http://server/struts2/path1/path2/path3/请求名
