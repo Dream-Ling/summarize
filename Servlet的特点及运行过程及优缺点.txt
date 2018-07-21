@@ -1,0 +1,30 @@
+Servlet的特点
+	* Servlet是一个供其他java程序(Servlet引擎)调用的java类，它不能独立运行
+	* Servlet引擎是一种容器程序，它负责管理和维护所有Servlet对象的生命周期，因此也被称之为Servlet容器或Web容器。
+	* Servlet引擎负责将客户端的请求信息转发给Servlet和将Servlet生成的响应信息返回给客户端。
+
+Servlet的运行过程Servlet程序是由WEB服务器调用，web服务器收到客户端的Servlet访问请求后：① Web服务器首先检查是否已经装载并创建了该Servlet的实例对象。如果是，则直接执行第④步，否则，执行第②步。② 装载并创建该Servlet的一个实例对象。③ 调用Servlet实例对象的init()方法。④ 创建一个用于封装HTTP请求消息的HttpServletRequest对象和一个代表HTTP响应消息的HttpServletResponse对象，然后调用Servlet的service()方法并将请求和响应对象作为参数传递进去。⑤ WEB应用程序被停止或重新启动之前，Servlet引擎将卸载Servlet，并在卸载之前调用Servlet的destroy()方法。
+
+
+优点：
+1. Servlet是纯Java语言，擅长于处理流程和业务逻辑。接收前端数据返回响应。
+缺点：
+1. web.xml配置量太多，不利于团队开发，在写每一个servlet在web.xml都要做相应的配置；
+2. servlet具有容器依赖性，不利于单元测试； 
+3. servlet处理的请求很局限
+
+           4.页面内容展示极差。
+
+
+ Servlet的优点：
+     1.是mvc的基础，其他框架比如struts1,struts2,webwork都是从servlet基础上发展过来的。
+     2.Servlet把最底层的api暴露给程序员，是程序员更能清楚的了解mvc的各个特点
+     3.程序员可以对Servlet进行封装。Structs2就是从servlet中封装以后得到的结果。
+Servlet的缺点：
+     1.在写每一个servlet在web.xml都要做相应的配置。如果有很多servlet，会导致web.xml内容过于
+       繁多。
+     2.这样的结构不利于团队分组开发。
+     3.在servlet中，doGet方法和doPost方法有HttpServletRequest和HttpServletResponse参数。
+       这两个参数与容器相关，要做单元测试的时候，要重新初始化这两个参数.(具有容器依赖性).
+
+     4.如果一个servlet中有很多的方法，则要通过参数传参的形式，分解到每一个方法中。
